@@ -1,0 +1,88 @@
+import React, { Component } from 'react';
+import { Text, View, StyleSheet, ScrollView, Image, Dimensions, TouchableOpacity, Button, Linking } from 'react-native';
+import { Constants, MapView, Accelerometer } from 'expo';
+
+const { width, height } = Dimensions.get('window');
+
+const images = [
+  {
+    url: 'https://s3-eu-west-1.amazonaws.com/work.ninjapixel.io/meetup-may-2017/london.jpg',
+    lat: 51.476852,
+    lng: -0.000500
+  }, {
+    url: 'https://s3-eu-west-1.amazonaws.com/work.ninjapixel.io/meetup-may-2017/sanFran.jpg',
+    lat: 37.733795,
+    lng: -122.446747
+  }, {
+    url: 'https://s3-eu-west-1.amazonaws.com/work.ninjapixel.io/meetup-may-2017/newYork.jpg',
+    lat: 40.758896,
+    lng: -73.985130
+  }, {
+    url: 'https://s3-eu-west-1.amazonaws.com/work.ninjapixel.io/meetup-may-2017/melbourne.jpg',
+    lat: -37.815018,
+    lng: 144.946014
+  }
+];
+
+export default class App extends Component {
+  state = {
+    mapRegion: { latitude: 37.78825, longitude: -122.4324, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }
+  };
+
+
+  renderImages = ()=>{
+    const onPressButton= ({lat, lng})=>{
+      const mapRegion= { latitude: lat, longitude: lng, latitudeDelta: 0.0, longitudeDelta: 0.0 };
+      this.setState({mapRegion:mapRegion});
+    };
+    
+    return images.map((d,i)=>(
+      <TouchableOpacity onPress={()=>onPressButton(d)}>
+      <Image 
+      key={i} source={{ uri: d.url }}
+        style={styles.image}
+      />
+      </TouchableOpacity>
+      ));
+  };
+
+
+  _handleMapRegionChange = mapRegion => {
+    this.setState({ mapRegion });
+  };
+
+  render() {
+    return (
+      <View style={styles.container}>
+        
+        <View>
+          <ScrollView horizontal >
+            {this.renderImages()}
+          </ScrollView>
+        </View>
+
+        <MapView
+          style={styles.map}
+          region={this.state.mapRegion}
+          onRegionChange={this._handleMapRegionChange}
+        />
+        
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
+  },
+  image: {
+    width,
+    height: Math.floor(height * 0.5),
+  },
+  map:{
+    flex:1
+  },
+});
